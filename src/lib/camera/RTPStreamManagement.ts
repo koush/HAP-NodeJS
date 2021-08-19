@@ -2,7 +2,9 @@ import crypto from 'crypto';
 import createDebug from 'debug';
 import net from "net";
 // noinspection JSDeprecatedSymbols
-import { LegacyCameraSource, LegacyCameraSourceAdapter, once, uuid } from "../../index";
+import { LegacyCameraSource, LegacyCameraSourceAdapter } from "./Camera";
+import * as uuid from "../util/uuid";
+import { once} from "../util/once";
 import { CharacteristicValue, Nullable, SessionIdentifier } from '../../types';
 import { Characteristic, CharacteristicEventTypes, CharacteristicSetCallback } from '../Characteristic';
 import { CameraController, CameraStreamingDelegate } from "../controller";
@@ -52,8 +54,12 @@ const enum VideoAttributesTypes {
   FRAME_RATE = 0x03
 }
 
-const enum VideoCodecType {
-  H264 = 0x00
+export const enum VideoCodecType {
+  H264 = 0x00,
+  /**
+   * HomeKit Secure Video Only.
+   */
+  H265 = 0x01,
 }
 
 export const enum H264Profile {
@@ -268,6 +274,7 @@ export type VideoStreamingOptions = {
 }
 
 export type H264CodecParameters = {
+  type?: VideoCodecType,
   levels: H264Level[],
   profiles: H264Profile[],
 }
@@ -309,9 +316,11 @@ export type StreamSessionIdentifier = string; // uuid provided by HAP to identif
 export type SnapshotRequest = {
   height: number;
   width: number;
+  reason?: number;
 }
 
 export type PrepareStreamRequest = {
+  connection: HAPConnection;
   sessionID: StreamSessionIdentifier,
   targetAddress: string,
   addressVersion: "ipv4" | "ipv6",
@@ -423,6 +432,7 @@ export type AudioInfo = {
 };
 
 export type VideoInfo = {  // minimum keyframe interval is about 5 seconds
+  codec: VideoCodecType;
   profile: H264Profile,
   level: H264Level,
   packetizationMode: VideoCodecPacketizationMode,
@@ -730,6 +740,7 @@ export class RTPStreamManagement {
 
 
     const videoInfo: VideoInfo = {
+      codec: videoCodec.readUInt8(0),
       profile: h264Profile,
       level: h264Level,
       packetizationMode: packetizationMode,
@@ -921,6 +932,7 @@ export class RTPStreamManagement {
 
 
     const prepareRequest: PrepareStreamRequest = {
+      connection,
       sessionID: sessionIdentifier,
       targetAddress: controllerAddress,
       addressVersion: addressVersion === IPAddressVersion.IPV6? "ipv6": "ipv4",
@@ -1172,7 +1184,7 @@ export class RTPStreamManagement {
     }
 
     const videoStreamConfiguration = tlv.encode(
-      VideoCodecConfigurationTypes.CODEC_TYPE, VideoCodecType.H264,
+      VideoCodecConfigurationTypes.CODEC_TYPE, videoOptions.codec.type || VideoCodecType.H264,
       VideoCodecConfigurationTypes.CODEC_PARAMETERS, codecParameters,
       VideoCodecConfigurationTypes.ATTRIBUTES, videoOptions.resolutions.map(resolution => {
         if (resolution.length != 3) {
