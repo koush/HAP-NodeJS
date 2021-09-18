@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import createDebug from "debug";
 import { EventEmitter } from "events";
-import { Readable } from 'stream';
 import { CharacteristicValue, SessionIdentifier } from "../../types";
 import {
   CameraStreamingOptions,
@@ -10,9 +9,11 @@ import {
   PrepareStreamResponse,
   RTPStreamManagement,
   SnapshotRequest,
-  StreamingRequest
+  StreamingRequest,
+  CameraRecordingConfiguration,
+  CameraRecordingOptions,
+  RecordingManagement
 } from "../camera";
-import { CameraRecordingConfiguration, CameraRecordingOptions, RecordingManagement } from '../camera';
 import {
   Characteristic,
   CharacteristicEventTypes,
@@ -57,7 +58,7 @@ export interface CameraControllerOptions {
       * Delegate which handles the audio/video recording data streaming on motion.
       */
     delegate: CameraRecordingDelegate,
-   }
+  }
 }
 
 export type SnapshotRequestCallback = (error?: Error | HAPStatus, buffer?: Buffer) => void;
@@ -411,12 +412,10 @@ export class CameraController extends EventEmitter implements Controller<CameraC
         serviceMap.dataStreamTransportManagement = this.dataStreamManagement.getService();
         modifiedServiceMap = true;
       }
-      //if (serviceMap.motionService) {
-        //this.motionService = serviceMap.motionService;
       if (!this.recordingOptions.motionService) {
         if (serviceMap.motionService) {
-            delete serviceMap.motionService;
-            modifiedServiceMap = true;
+          delete serviceMap.motionService;
+          modifiedServiceMap = true;
         }
       }
       else {
@@ -630,7 +629,7 @@ export class CameraController extends EventEmitter implements Controller<CameraC
       return;
     this.connectionMap.delete(streamId);
     const { generator } = entry;
-    generator.throw('dataSend close. reason: '+message.reason);
+    generator.throw('dataSend close. Reason: '+message.reason);
   }
 
   private handleDataStreamConnectionClosed(closedConnection: DataStreamConnection) {
@@ -674,7 +673,7 @@ export class CameraController extends EventEmitter implements Controller<CameraC
   /**
    * @private
    */
-  handleSnapshotRequest(height: number, width: number, accessoryName?: string): Promise<Buffer> {
+  handleSnapshotRequest(height: number, width: number, accessoryName?: string, reason?: number): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       let timeout: NodeJS.Timeout | undefined = setTimeout(() => {
         console.warn(`[${accessoryName}] The image snapshot handler for the given accessory is slow to respond! See https://git.io/JtMGR for more info.`);
@@ -694,6 +693,7 @@ export class CameraController extends EventEmitter implements Controller<CameraC
         this.delegate.handleSnapshotRequest({
           height: height,
           width: width,
+          reason: reason,
         }, (error, buffer) => {
           if (!timeout) {
             return;
