@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import createDebug from "debug";
 import { EventEmitter } from "events";
-import { Readable } from 'stream';
 import { CharacteristicValue, SessionIdentifier } from "../../types";
 import {
   CameraStreamingOptions,
@@ -166,6 +165,7 @@ export class CameraController extends EventEmitter implements Controller<CameraC
   private recordingManagement?: RecordingManagement;
   private dataStreamManagement?: DataStreamManagement;
   motionService?: MotionSensor;
+  private cameraDoorbellService?: Doorbell;
   private connectionMap = new Map<number, {
     generator: AsyncGenerator<Buffer>,
     connection: DataStreamConnection,
@@ -297,6 +297,11 @@ export class CameraController extends EventEmitter implements Controller<CameraC
         this.motionService.setCharacteristic(Characteristic.Active, 1);
         this.recordingManagement.getService().addLinkedService(this.motionService);
       }
+      if(this.recordingOptions.doorbellService) {
+        this.cameraDoorbellService = new Doorbell('', '');
+        this.cameraDoorbellService.setCharacteristic(Characteristic.Active, 1);
+        this.recordingManagement.getService().addLinkedService(this.cameraDoorbellService);
+      }
 
       this.recordingManagement.getService().addLinkedService(this.dataStreamManagement.getService());
     }
@@ -308,6 +313,7 @@ export class CameraController extends EventEmitter implements Controller<CameraC
       cameraEventRecordingManagement: this.recordingManagement?.getService(),
       dataStreamTransportManagement: this.dataStreamManagement?.getService(),
       motionService: this.motionService,
+      doorbell: this.cameraDoorbellService
     };
 
     this.streamManagements.forEach((management, index) => serviceMap[CameraController.STREAM_MANAGEMENT + index] = management.getService());
@@ -414,10 +420,23 @@ export class CameraController extends EventEmitter implements Controller<CameraC
       }
       else {
         if (!serviceMap.motionService) {
-          this.motionService = new MotionSensor('', '');
-          serviceMap.motionService = this.motionService;
-          modifiedServiceMap = true;
+            this.motionService = new MotionSensor('', '');
+            serviceMap.motionService = this.motionService;
+            modifiedServiceMap = true;
+          }
+      }
+      if (!this.recordingOptions.doorbellService) {
+        if (serviceMap.doorbell) {
+            delete serviceMap.doorbell;
+            modifiedServiceMap = true;
         }
+      }
+      else {
+        if (!serviceMap.doorbell) {
+            this.cameraDoorbellService = new Doorbell('', '');
+            serviceMap.doorbell = this.cameraDoorbellService;
+            modifiedServiceMap = true;
+          }
       }
     }
     else {
@@ -436,6 +455,11 @@ export class CameraController extends EventEmitter implements Controller<CameraC
       if (serviceMap.motionService) {
         delete serviceMap.motionService;
         modifiedServiceMap = true;
+      }
+      if(serviceMap.doorbell) {
+        delete serviceMap.doorbell;
+        modifiedServiceMap = true;
+
       }
     }
 
@@ -605,7 +629,7 @@ export class CameraController extends EventEmitter implements Controller<CameraC
       return;
     this.connectionMap.delete(streamId);
     const { generator } = entry;
-    generator.throw('dataSend close');
+    generator.throw('dataSend close. Reason: '+message.reason);
   }
 
   private handleDataStreamConnectionClosed(closedConnection: DataStreamConnection) {
