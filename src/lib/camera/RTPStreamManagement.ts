@@ -1,5 +1,5 @@
-import crypto from 'crypto';
-import createDebug from 'debug';
+import crypto from "crypto";
+import createDebug from "debug";
 import net from "net";
 // noinspection JSDeprecatedSymbols
 import { LegacyCameraSource, LegacyCameraSourceAdapter } from "./Camera";
@@ -10,10 +10,10 @@ import { Characteristic, CharacteristicEventTypes, CharacteristicSetCallback } f
 import { CameraController, CameraStreamingDelegate } from "../controller/CameraController";
 import type { CameraRTPStreamManagement } from "../definitions";
 import { HAPStatus } from "../HAPServer";
-import { Service } from '../Service';
+import { Service } from "../Service";
 import { HAPConnection, HAPConnectionEvent } from "../util/eventedhttp";
-import * as tlv from '../util/tlv';
-import RTPProxy from './RTPProxy';
+import * as tlv from "../util/tlv";
+import RTPProxy from "./RTPProxy";
 
 const debug = createDebug('HAP-NodeJS:Camera:RTPStreamManagement');
 // ---------------------------------- TLV DEFINITIONS START ----------------------------------
@@ -568,14 +568,16 @@ export class RTPStreamManagement {
     const managementService = new Service.CameraRTPStreamManagement('', id.toString());
 
     managementService.setCharacteristic(Characteristic.Active, true);
-    managementService.setCharacteristic(Characteristic.SupportedRTPConfiguration, this.supportedRTPConfiguration);
-    managementService.setCharacteristic(Characteristic.SupportedVideoStreamConfiguration, this.supportedVideoStreamConfiguration);
-    managementService.setCharacteristic(Characteristic.SupportedAudioStreamConfiguration, this.supportedAudioStreamConfiguration);
 
     return managementService;
   }
 
   private setupServiceHandlers() {
+    // ensure that configurations are up to date and reflected in the characteristic values
+    this.service.setCharacteristic(Characteristic.SupportedRTPConfiguration, this.supportedRTPConfiguration);
+    this.service.setCharacteristic(Characteristic.SupportedVideoStreamConfiguration, this.supportedVideoStreamConfiguration);
+    this.service.setCharacteristic(Characteristic.SupportedAudioStreamConfiguration, this.supportedAudioStreamConfiguration);
+
     this._updateStreamStatus(StreamingStatus.AVAILABLE); // reset streaming status to available
     this.service.setCharacteristic(Characteristic.SetupEndpoints, this.setupEndpointsResponse); // reset SetupEndpoints to default
 
