@@ -120,7 +120,7 @@ export class CiaoAdvertiser extends EventEmitter implements Advertiser {
     });
     this.advertisedService.on(ServiceEvent.NAME_CHANGED, this.emit.bind(this, AdvertiserEvent.UPDATED_NAME));
 
-    console.log(`Preparing Advertiser for '${this.accessoryInfo.displayName}' using ciao backend!`);
+    debug(`Preparing Advertiser for '${this.accessoryInfo.displayName}' using ciao backend!`);
   }
 
   public initPort(port: number): void {
@@ -128,7 +128,7 @@ export class CiaoAdvertiser extends EventEmitter implements Advertiser {
   }
 
   public startAdvertising(): Promise<void> {
-    console.log(`Starting to advertise '${this.accessoryInfo.displayName}' using ciao backend!`);
+    debug(`Starting to advertise '${this.accessoryInfo.displayName}' using ciao backend!`);
     return this.advertisedService!.advertise();
   }
 
@@ -204,7 +204,7 @@ export class BonjourHAPAdvertiser extends EventEmitter implements Advertiser {
     this.serviceOptions = serviceOptions;
 
     this.bonjour = bonjour(responderOptions);
-    console.log(`Preparing Advertiser for '${this.accessoryInfo.displayName}' using bonjour-hap backend!`);
+    debug(`Preparing Advertiser for '${this.accessoryInfo.displayName}' using bonjour-hap backend!`);
   }
 
   public initPort(port: number): void {
@@ -217,7 +217,7 @@ export class BonjourHAPAdvertiser extends EventEmitter implements Advertiser {
       throw new Error("Tried starting bonjour-hap advertisement without initializing port!");
     }
 
-    console.log(`Starting to advertise '${this.accessoryInfo.displayName}' using bonjour-hap backend!`);
+    debug(`Starting to advertise '${this.accessoryInfo.displayName}' using bonjour-hap backend!`);
 
     if (this.advertisement) {
       this.destroy();
