@@ -15,6 +15,7 @@ import createDebug from "debug";
 import dbus from "@homebridge/dbus-native";
 import { EventEmitter } from "events";
 import { AccessoryInfo } from './model/AccessoryInfo';
+import { PromiseTimeout } from "./util/promise-utils";
 
 /**
  * This enum lists all bitmasks for all known status flags.
@@ -73,7 +74,7 @@ export interface Advertiser {
 
   initPort(port: number): void;
 
-  startAdvertising(): void;
+  startAdvertising(): Promise<void>;
 
   updateAdvertisement(silent?: boolean): void;
 
@@ -134,7 +135,7 @@ export class CiaoAdvertiser extends EventEmitter implements Advertiser {
   }
 
   public async destroy(): Promise<void> {
-    await this.advertisedService!.destroy();
+    // advertisedService.destroy(); is called implicitly via the shutdown call
     await this.responder.shutdown();
     this.removeAllListeners();
   }
@@ -208,7 +209,7 @@ export class BonjourHAPAdvertiser extends EventEmitter implements Advertiser {
     this.port = port;
   }
 
-  public startAdvertising(): void {
+  public startAdvertising(): Promise<void> {
     assert(!this.destroyed, "Can't advertise on a destroyed bonjour instance!");
     if (this.port == undefined) {
       throw new Error("Tried starting bonjour-hap advertisement without initializing port!");
@@ -231,6 +232,8 @@ export class BonjourHAPAdvertiser extends EventEmitter implements Advertiser {
       addUnsafeServiceEnumerationRecord: true,
       ...this.serviceOptions,
     });
+
+    return PromiseTimeout(1);
   }
 
   public updateAdvertisement(silent?: boolean): void {

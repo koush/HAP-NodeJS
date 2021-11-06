@@ -314,7 +314,16 @@ export const enum AccessoryEventTypes {
    * You must call the callback for identification to be successful.
    */
   IDENTIFY = "identify",
+  /**
+   * This event is emitted once the HAP TCP socket is bound.
+   * At this point the mdns advertisement isn't yet available. Use the {@link ADVERTISED} if you require the accessory to be discoverable.
+   */
   LISTENING = "listening",
+  /**
+   * This event is emitted once the mDNS suite has fully advertised the presence of the accessory.
+   * This event is guaranteed to be called after {@link LISTENING}.
+   */
+  ADVERTISED = "advertised",
   SERVICE_CONFIGURATION_CHANGE = "service-configurationChange",
   /**
    * Emitted after a change in the value of one of the provided Service's Characteristics.
@@ -329,6 +338,7 @@ export const enum AccessoryEventTypes {
 export declare interface Accessory {
   on(event: "identify", listener: (paired: boolean, callback: VoidCallback) => void): this;
   on(event: "listening", listener: (port: number, address: string) => void): this;
+  on(event: "advertised", listener: () => void): this;
 
   on(event: "service-configurationChange", listener: (change: ServiceConfigurationChange) => void): this;
   on(event: "service-characteristic-change", listener: (change: AccessoryCharacteristicChange) => void): this;
@@ -341,6 +351,7 @@ export declare interface Accessory {
 
   emit(event: "identify", paired: boolean, callback: VoidCallback): boolean;
   emit(event: "listening", port: number, address: string): boolean;
+  emit(event: "advertised"): boolean;
 
   emit(event: "service-configurationChange", change: ServiceConfigurationChange): boolean;
   emit(event: "service-characteristic-change", change: AccessoryCharacteristicChange): boolean;
@@ -380,6 +391,12 @@ export class Accessory extends EventEmitter {
   services: Service[] = [];
   private primaryService?: Service;
   shouldPurgeUnusedIDs: boolean = true; // Purge unused ids by default
+  /**
+   * Captures if initialization steps inside {@link publish} have been called.
+   * This is important when calling {@link publish} multiple times (e.g. after calling {@link unpublish}).
+   * @private Private API
+   */
+  private initialized: boolean = false
 
   private controllers: Record<ControllerIdentifier, ControllerContext> = {};
   private serializedControllers?: Record<ControllerIdentifier, ControllerServiceMap>; // store uninitialized controller data after a Accessory.deserialize call
@@ -395,7 +412,7 @@ export class Accessory extends EventEmitter {
 
   private configurationChangeDebounceTimeout?: NodeJS.Timeout;
   /**
-   * This property captures the time when we last server a /accessories request.
+   * This property captures the time when we last served a /accessories request.
    * For multiple bursts of /accessories request we don't want to always contact GET handlers
    */
   private lastAccessoriesRequest: number = 0;
@@ -1119,8 +1136,8 @@ export class Accessory extends EventEmitter {
       Accessory.cleanupAccessoryData(this.lastKnownUsername); // delete old Accessory data
     }
 
-    if (info.addIdentifyingMaterial ?? true) {
-      // adding some identifying material to our displayName
+    if (!this.initialized && (info.addIdentifyingMaterial ?? true)) {
+      // adding some identifying material to our displayName if its our first publish() call
       this.displayName = this.displayName + " " + crypto.createHash('sha512')
         .update(info.username, 'utf8')
         .digest('hex').slice(0, 4).toUpperCase();
@@ -1171,7 +1188,9 @@ export class Accessory extends EventEmitter {
       this.controllerStorage.purgeUnidentifiedAccessoryData = false;
     }
 
-    this.controllerStorage.load(info.username); // initializing controller data
+    if (!this.initialized) { // controller storage is only loaded from disk the first time we publish!
+      this.controllerStorage.load(info.username); // initializing controller data
+    }
 
     // assign aid/iid
     this._assignIDs(this._identifierCache);
@@ -1239,6 +1258,8 @@ export class Accessory extends EventEmitter {
     this._server.on(HAPServerEventTypes.REQUEST_RESOURCE, this.handleResource.bind(this));
 
     this._server.listen(info.port, parsed.serverAddress);
+
+    this.initialized = true;
   }
 
   /**
@@ -1246,8 +1267,8 @@ export class Accessory extends EventEmitter {
    * Accessory object will no longer valid after invoking this method
    * Trying to invoke publish() on the object will result undefined behavior
    */
-  public destroy(): void {
-    this.unpublish();
+  public destroy(): Promise<void> {
+    let promise = this.unpublish();
 
     if (this._accessoryInfo) {
       Accessory.cleanupAccessoryData(this._accessoryInfo.username);
@@ -1257,16 +1278,18 @@ export class Accessory extends EventEmitter {
       this.controllerStorage = new ControllerStorage(this);
     }
     this.removeAllListeners();
+
+    return promise;
   }
 
-  public unpublish(): void {
+  public async unpublish(): Promise<void> {
     if (this._server) {
       this._server.destroy();
       this._server = undefined;
     }
     if (this._advertiser) {
       // noinspection JSIgnoredPromiseFromCall
-      this._advertiser.destroy();
+      await this._advertiser.destroy();
       this._advertiser = undefined;
     }
   }
@@ -1299,8 +1322,10 @@ export class Accessory extends EventEmitter {
     assert(this._advertiser, "Advertiser wasn't created at onListening!");
     // the HAP server is listening, so we can now start advertising our presence.
     this._advertiser!.initPort(port);
-    // noinspection JSIgnoredPromiseFromCall
-    this._advertiser!.startAdvertising();
+
+    this._advertiser!.startAdvertising()
+      .then(() => this.emit(AccessoryEventTypes.ADVERTISED));
+
     this.emit(AccessoryEventTypes.LISTENING, port, hostname);
   }
 
