@@ -53,6 +53,7 @@
   "dependencies": {
     "@homebridge/ciao": "^1.1.5",
     "bonjour-hap": "^3.6.3",
+    "dbus-native": "^0.4.0",
     "debug": "^4.3.4",
     "fast-srp-hap": "2.0.4",
     "futoin-hkdf": "^1.5.1",
