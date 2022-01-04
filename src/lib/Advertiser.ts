@@ -11,7 +11,8 @@ import { InterfaceName, IPAddress } from "@homebridge/ciao/lib/NetworkManager";
 import assert from "assert";
 import bonjour, { BonjourHAP, BonjourHAPService, MulticastOptions } from "bonjour-hap";
 import crypto from 'crypto';
-import dbus from 'dbus-native';
+import createDebug from "debug";
+import dbus from "@homebridge/dbus-native";
 import { EventEmitter } from "events";
 import { AccessoryInfo } from './model/AccessoryInfo';
 
