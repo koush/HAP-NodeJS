@@ -1111,7 +1111,7 @@ export class Accessory extends EventEmitter {
    *                                that for instance an appropriate icon can be drawn for the user while adding a
    *                                new Accessory.
    */
-  public publish(info: PublishInfo, allowInsecureRequest?: boolean): void {
+  public async publish(info: PublishInfo, allowInsecureRequest?: boolean): Promise<void> {
     // noinspection JSDeprecatedSymbols
     if (!info.advertiser && info.useLegacyAdvertiser != null) {
       // noinspection JSDeprecatedSymbols
@@ -1208,7 +1208,10 @@ export class Accessory extends EventEmitter {
     // create our Advertiser which broadcasts our presence over mdns
     const parsed = Accessory.parseBindOption(info);
 
-    switch (info.advertiser ?? MDNSAdvertiser.BONJOUR) {
+    const defaultAdvertiser = info.advertiser
+      ?? (await AvahiAdvertiser.isAvailable() ? MDNSAdvertiser.AVAHI : MDNSAdvertiser.BONJOUR);
+
+    switch (defaultAdvertiser) {
       case MDNSAdvertiser.CIAO:
         this._advertiser = new CiaoAdvertiser(this._accessoryInfo, {
           interface: parsed.advertiserAddress
@@ -1324,7 +1327,8 @@ export class Accessory extends EventEmitter {
     this._advertiser!.initPort(port);
 
     this._advertiser!.startAdvertising()
-      .then(() => this.emit(AccessoryEventTypes.ADVERTISED));
+      .then(() => this.emit(AccessoryEventTypes.ADVERTISED))
+      .catch(reason => console.error("Could not create mDNS advertisement. The HAP-Server won't be discoverable: " + reason))
 
     this.emit(AccessoryEventTypes.LISTENING, port, hostname);
   }
