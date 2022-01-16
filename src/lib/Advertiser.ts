@@ -17,6 +17,8 @@ import { EventEmitter } from "events";
 import { AccessoryInfo } from './model/AccessoryInfo';
 import { PromiseTimeout } from "./util/promise-utils";
 
+const debug = createDebug("HAP-NodeJS:Advertiser");
+
 /**
  * This enum lists all bitmasks for all known status flags.
  * When the bit for the given bitmask is set, it represents the state described by the name.
