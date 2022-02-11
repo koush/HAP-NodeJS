@@ -1390,30 +1390,6 @@ describe("CharacteristicDefinitions", () => {
     });
   });
 
-  describe("TunnelConnectionTimeout", () => {
-    it("should be able to construct", () => {
-      new Characteristic.TunnelConnectionTimeout();
-    });
-  });
-
-  describe("TunneledAccessoryAdvertising", () => {
-    it("should be able to construct", () => {
-      new Characteristic.TunneledAccessoryAdvertising();
-    });
-  });
-
-  describe("TunneledAccessoryConnected", () => {
-    it("should be able to construct", () => {
-      new Characteristic.TunneledAccessoryConnected();
-    });
-  });
-
-  describe("TunneledAccessoryStateNumber", () => {
-    it("should be able to construct", () => {
-      new Characteristic.TunneledAccessoryStateNumber();
-    });
-  });
-
   describe("ValveType", () => {
     it("should be able to construct", () => {
       new Characteristic.ValveType();

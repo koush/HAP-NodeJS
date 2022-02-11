@@ -42,14 +42,16 @@ import {
   Perms
 } from './Characteristic';
 import {
-  CameraController,
-  CameraControllerOptions,
   Controller,
   ControllerConstructor,
   ControllerIdentifier,
   ControllerServiceMap,
   isSerializableController,
-} from "./controller";
+} from "./controller/Controller";
+import {
+  CameraController,
+  CameraControllerOptions,
+} from "./controller/CameraController";
 import {
   AccessoriesCallback,
   AddPairingCallback,

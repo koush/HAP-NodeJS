@@ -3,7 +3,6 @@ import './lib/definitions'; // must be loaded before Characteristic and Service 
 import * as accessoryLoader from './lib/AccessoryLoader';
 import * as uuidFunctions from './lib/util/uuid';
 import * as legacyTypes from './accessories/types';
-import { HAPStorage } from "./lib/model/HAPStorage";
 
 export const AccessoryLoader = accessoryLoader;
 export const uuid = uuidFunctions;
@@ -35,18 +34,3 @@ function printInit() {
   console.log("Initializing HAP-NodeJS v" + packageJson.version + "...");
 }
 printInit()
-
-/**
- *
- * @param {string} storagePath
- * @deprecated the need to manually initialize the internal storage was removed. If you want to set a custom
- *  storage path location, please use {@link HAPStorage.setCustomStoragePath} directly.
- */
-export function init(storagePath?: string) {
-  console.log("DEPRECATED: The need to manually initialize HAP (by calling the init method) was removed. " +
-    "If you want to set a custom storage path location, please ust HAPStorage.setCustomStoragePath directly. " +
-    "This method will be removed in the next major update!");
-  if (storagePath) {
-    HAPStorage.setCustomStoragePath(storagePath);
-  }
-}

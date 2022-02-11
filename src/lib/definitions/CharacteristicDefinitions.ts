@@ -381,14 +381,10 @@ export class CameraOperatingModeIndicator extends Characteristic {
 
   public static readonly UUID: string = "0000021D-0000-1000-8000-0026BB765291";
 
-  public static readonly DISABLE = 0;
-  public static readonly ENABLE = 1;
-
   constructor() {
     super("Camera Operating Mode Indicator", CameraOperatingModeIndicator.UUID, {
       format: Formats.BOOL,
       perms: [Perms.NOTIFY, Perms.PAIRED_READ, Perms.PAIRED_WRITE, Perms.TIMED_WRITE],
-      validValues: [0, 1],
     });
     this.value = this.getDefaultValue();
   }
@@ -1392,16 +1388,12 @@ export class EventSnapshotsActive extends Characteristic {
 
   public static readonly UUID: string = "00000223-0000-1000-8000-0026BB765291";
 
-  public static readonly DISABLE = 0;
-  public static readonly ENABLE = 1;
-
   constructor() {
     super("Event Snapshots Active", EventSnapshotsActive.UUID, {
       format: Formats.UINT8,
       perms: [Perms.NOTIFY, Perms.PAIRED_READ, Perms.PAIRED_WRITE],
       minValue: 0,
       maxValue: 1,
-      validValues: [0, 1],
     });
     this.value = this.getDefaultValue();
   }
@@ -1619,16 +1611,12 @@ export class HomeKitCameraActive extends Characteristic {
 
   public static readonly UUID: string = "0000021B-0000-1000-8000-0026BB765291";
 
-  public static readonly OFF = 0;
-  public static readonly ON = 1;
-
   constructor() {
     super("HomeKit Camera Active", HomeKitCameraActive.UUID, {
       format: Formats.UINT8,
       perms: [Perms.NOTIFY, Perms.PAIRED_READ, Perms.PAIRED_WRITE],
       minValue: 0,
       maxValue: 1,
-      validValues: [0, 1],
     });
     this.value = this.getDefaultValue();
   }
@@ -2592,14 +2580,10 @@ export class PeriodicSnapshotsActive extends Characteristic {
 
   public static readonly UUID: string = "00000225-0000-1000-8000-0026BB765291";
 
-  public static readonly DISABLE = 0;
-  public static readonly ENABLE = 1;
-
   constructor() {
     super("Periodic Snapshots Active", PeriodicSnapshotsActive.UUID, {
       format: Formats.UINT8,
       perms: [Perms.NOTIFY, Perms.PAIRED_READ, Perms.PAIRED_WRITE],
-      validValues: [0, 1],
     });
     this.value = this.getDefaultValue();
   }
@@ -4579,14 +4563,10 @@ export class ThirdPartyCameraActive extends Characteristic {
 
   public static readonly UUID: string = "0000021C-0000-1000-8000-0026BB765291";
 
-  public static readonly OFF = 0;
-  public static readonly ON = 1;
-
   constructor() {
     super("Third Party Camera Active", ThirdPartyCameraActive.UUID, {
       format: Formats.UINT8,
       perms: [Perms.NOTIFY, Perms.PAIRED_READ],
-      validValues: [0, 1],
     });
     this.value = this.getDefaultValue();
   }
@@ -4703,74 +4683,6 @@ export class TransmitPower extends Characteristic {
   }
 }
 Characteristic.TransmitPower = TransmitPower;
-
-/**
- * Characteristic "Tunnel Connection Timeout"
- */
-export class TunnelConnectionTimeout extends Characteristic {
-
-  public static readonly UUID: string = "00000061-0000-1000-8000-0026BB765291";
-
-  constructor() {
-    super("Tunnel Connection Timeout", TunnelConnectionTimeout.UUID, {
-      format: Formats.INT,
-      perms: [Perms.NOTIFY, Perms.PAIRED_READ, Perms.PAIRED_WRITE],
-    });
-    this.value = this.getDefaultValue();
-  }
-}
-Characteristic.TunnelConnectionTimeout = TunnelConnectionTimeout;
-
-/**
- * Characteristic "Tunneled Accessory Advertising"
- */
-export class TunneledAccessoryAdvertising extends Characteristic {
-
-  public static readonly UUID: string = "00000060-0000-1000-8000-0026BB765291";
-
-  constructor() {
-    super("Tunneled Accessory Advertising", TunneledAccessoryAdvertising.UUID, {
-      format: Formats.BOOL,
-      perms: [Perms.NOTIFY, Perms.PAIRED_READ, Perms.PAIRED_WRITE],
-    });
-    this.value = this.getDefaultValue();
-  }
-}
-Characteristic.TunneledAccessoryAdvertising = TunneledAccessoryAdvertising;
-
-/**
- * Characteristic "Tunneled Accessory Connected"
- */
-export class TunneledAccessoryConnected extends Characteristic {
-
-  public static readonly UUID: string = "00000059-0000-1000-8000-0026BB765291";
-
-  constructor() {
-    super("Tunneled Accessory Connected", TunneledAccessoryConnected.UUID, {
-      format: Formats.BOOL,
-      perms: [Perms.NOTIFY, Perms.PAIRED_READ, Perms.PAIRED_WRITE],
-    });
-    this.value = this.getDefaultValue();
-  }
-}
-Characteristic.TunneledAccessoryConnected = TunneledAccessoryConnected;
-
-/**
- * Characteristic "Tunneled Accessory State Number"
- */
-export class TunneledAccessoryStateNumber extends Characteristic {
-
-  public static readonly UUID: string = "00000058-0000-1000-8000-0026BB765291";
-
-  constructor() {
-    super("Tunneled Accessory State Number", TunneledAccessoryStateNumber.UUID, {
-      format: Formats.INT,
-      perms: [Perms.NOTIFY, Perms.PAIRED_READ],
-    });
-    this.value = this.getDefaultValue();
-  }
-}
-Characteristic.TunneledAccessoryStateNumber = TunneledAccessoryStateNumber;
 
 /**
  * Characteristic "Valve Type"

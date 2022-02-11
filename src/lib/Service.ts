@@ -22,9 +22,6 @@ import {
   Assistant,
   AudioStreamManagement,
   Battery,
-  BridgeConfiguration,
-  BridgingState,
-  CameraControl,
   CameraOperatingMode,
   CameraRecordingManagement,
   CameraRTPStreamManagement,
@@ -77,9 +74,7 @@ import {
   TemperatureSensor,
   Thermostat,
   ThreadTransport,
-  TimeInformation,
   TransferTransportManagement,
-  Tunnel,
   Valve,
   WiFiRouter,
   WiFiSatellite,
@@ -181,18 +176,6 @@ export class Service extends EventEmitter {
    */
   public static BatteryService: typeof Battery;
   /**
-   * @deprecated Removed and not used anymore
-   */
-  public static BridgeConfiguration: typeof BridgeConfiguration;
-  /**
-   * @deprecated Removed and not used anymore
-   */
-  public static BridgingState: typeof BridgingState;
-  /**
-   * @deprecated This service has no usage anymore and will be ignored by iOS
-   */
-  public static CameraControl: typeof CameraControl;
-  /**
    * @deprecated Please use {@link Service.CameraRecordingManagement}.
    */
   public static CameraEventRecordingManagement: typeof CameraRecordingManagement;
@@ -256,16 +239,7 @@ export class Service extends EventEmitter {
   public static TemperatureSensor: typeof TemperatureSensor;
   public static Thermostat: typeof Thermostat;
   public static ThreadTransport: typeof ThreadTransport;
-  /**
-   * @deprecated Removed and not used anymore
-   */
-  public static TimeInformation: typeof TimeInformation;
   public static TransferTransportManagement: typeof TransferTransportManagement;
-  public static Tunnel: typeof Tunnel;
-  /**
-   * @deprecated Please use {@link Service.Tunnel}.
-   */
-  public static TunneledBTLEAccessoryService: typeof Tunnel;
   public static Valve: typeof Valve;
   public static WiFiRouter: typeof WiFiRouter;
   public static WiFiSatellite: typeof WiFiSatellite;

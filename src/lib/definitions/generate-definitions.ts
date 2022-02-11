@@ -4,7 +4,7 @@ import assert from "assert";
 import { Command } from "commander";
 import fs from "fs";
 import path from "path";
-import plist from "simple-plist";
+const plist = require("simple-plist");
 import { Access, Characteristic, Formats, Units } from "../Characteristic";
 import { toLongForm } from "../util/uuid";
 import {

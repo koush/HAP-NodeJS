@@ -236,10 +236,6 @@ import {
   ThreadStatus,
   TimeUpdate,
   TransmitPower,
-  TunnelConnectionTimeout,
-  TunneledAccessoryAdvertising,
-  TunneledAccessoryConnected,
-  TunneledAccessoryStateNumber,
   ValveType,
   Version,
   VideoAnalysisActive,
@@ -876,10 +872,6 @@ export class Characteristic extends EventEmitter {
    */
   public static TimeUpdate: typeof TimeUpdate;
   public static TransmitPower: typeof TransmitPower;
-  public static TunnelConnectionTimeout: typeof TunnelConnectionTimeout;
-  public static TunneledAccessoryAdvertising: typeof TunneledAccessoryAdvertising;
-  public static TunneledAccessoryConnected: typeof TunneledAccessoryConnected;
-  public static TunneledAccessoryStateNumber: typeof TunneledAccessoryStateNumber;
   public static ValveType: typeof ValveType;
   public static Version: typeof Version;
   public static VideoAnalysisActive: typeof VideoAnalysisActive;

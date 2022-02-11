@@ -402,48 +402,6 @@ export const ServiceManualAdditions: Map<string, GeneratedService> = new Map([
     requiredCharacteristics: ["mute"],
     optionalCharacteristics: ["active", "volume"],
   }],
-  ["camera-control", {
-    id: "camera-control",
-    UUID: "00000111-0000-1000-8000-0026BB765291",
-    name: "Camera Control",
-    className: "CameraControl",
-    deprecatedNotice: "This service has no usage anymore and will be ignored by iOS",
-
-    requiredCharacteristics: ["on"],
-    optionalCharacteristics: ["horizontal-tilt.current", "vertical-tilt.current", "horizontal-tilt.target", "vertical-tilt.target", "night-vision", "optical-zoom", "digital-zoom", "image-rotation", "image-mirroring", "name"]
-  }],
-  ["time-information", {
-    id: "time-information",
-    UUID: "00000099-0000-1000-8000-0026BB765291",
-    name: "Time Information",
-    className: "TimeInformation",
-    deprecatedNotice: "Removed and not used anymore",
-
-    requiredCharacteristics: ["current-time", "day-of-the-week", "time-update"],
-    optionalCharacteristics: ["name"],
-  }],
-
-  ["bridging-state", {
-    id: "bridging-state",
-    UUID: "00000062-0000-1000-8000-0026BB765291",
-    name: "Bridging State",
-    className: "BridgingState",
-    deprecatedNotice: "Removed and not used anymore",
-
-    requiredCharacteristics: ["reachable", "link-quality", "accessory.identifier", "category"],
-    optionalCharacteristics: ["name"],
-  }],
-
-  ["bridge-configuration", {
-    id: "bridge-configuration",
-    UUID: "000000A1-0000-1000-8000-0026BB765291",
-    name: "Bridge Configuration",
-    className: "BridgeConfiguration",
-    deprecatedNotice: "Removed and not used anymore",
-
-    requiredCharacteristics: ["configure-bridged-accessory-status", "discover-bridged-accessories", "discovered-bridged-accessories", "configure-bridged-accessory"],
-    optionalCharacteristics: ["name"],
-  }],
 ]);
 
 export const CharacteristicSinceInformation: Map<string, string> = new Map([

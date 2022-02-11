@@ -4,10 +4,10 @@ import net from "net";
 // noinspection JSDeprecatedSymbols
 import { LegacyCameraSource, LegacyCameraSourceAdapter } from "./Camera";
 import * as uuid from "../util/uuid";
-import { once} from "../util/once";
+import { once } from "../util/once";
 import { CharacteristicValue, Nullable, SessionIdentifier } from '../../types';
 import { Characteristic, CharacteristicEventTypes, CharacteristicSetCallback } from '../Characteristic';
-import { CameraController, CameraStreamingDelegate } from "../controller";
+import { CameraController, CameraStreamingDelegate } from "../controller/CameraController";
 import type { CameraRTPStreamManagement } from "../definitions";
 import { HAPStatus } from "../HAPServer";
 import { Service } from '../Service';
