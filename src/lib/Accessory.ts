@@ -1166,7 +1166,7 @@ export class Accessory extends EventEmitter {
     // make sure we have up-to-date values in AccessoryInfo, then save it in case they changed (or if we just created it)
     // ensure the publish name has no period characters: that is a valid domain name character
     // but HomeKit fails to pair with a multilevel domain.
-    this._accessoryInfo.displayName = this.displayName.replace(/\./gi, '');
+    this._accessoryInfo.displayName = this.displayName.replace(/\./gi, '-');
     this._accessoryInfo.model = this.getService(Service.AccessoryInformation)!.getCharacteristic(Characteristic.Model).value as string;
     this._accessoryInfo.category = info.category || Categories.OTHER;
     this._accessoryInfo.pincode = info.pincode;
