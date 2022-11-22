@@ -52,9 +52,9 @@
   ],
   "dependencies": {
     "@homebridge/ciao": "^1.1.5",
-    "bonjour-hap": "^3.6.3",
+    "@homebridge/dbus-native": "^0.5.0",
+    "bonjour-hap": "^3.6.4",
     "debug": "^4.3.2",
-    "@homebridge/dbus-native": "^0.4.1",
     "fast-srp-hap": "2.0.4",
     "futoin-hkdf": "^1.5.1",
     "ip": "^1.1.5",
