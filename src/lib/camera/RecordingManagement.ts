@@ -643,7 +643,7 @@ export class RecordingManagement {
     const profile = videoParameters[VideoCodecParametersTypes.PROFILE_ID][0];
     const level = videoParameters[VideoCodecParametersTypes.LEVEL][0];
     const videoBitrate = videoParameters[VideoCodecParametersTypes.BITRATE].readInt32LE(0);
-    const iFrameInterval = videoParameters[VideoCodecParametersTypes.IFRAME_INTERVAL].readInt32LE(0);
+    const iFrameInterval = videoParameters[VideoCodecParametersTypes.IFRAME_INTERVAL]?.readInt32LE(0) || 5000;
 
     const width = videoAttributes[VideoAttributesTypes.IMAGE_WIDTH].readInt16LE(0);
     const height = videoAttributes[VideoAttributesTypes.IMAGE_HEIGHT].readInt16LE(0);
@@ -731,9 +731,17 @@ export class RecordingManagement {
       throw new Error("Video resolutions cannot be undefined");
     }
 
+    const iframeEncodable: tlv.TLVEncodable[] = [];
+    if (videoOptions.parameters.iframeInterval) {
+      const iframeInterval = Buffer.alloc(4);
+      iframeInterval.writeInt32LE(videoOptions.parameters.iframeInterval, 0);
+      iframeEncodable.push(VideoCodecParametersTypes.IFRAME_INTERVAL, iframeInterval);
+    }
+
     const codecParameters = tlv.encode(
       VideoCodecParametersTypes.PROFILE_ID, videoOptions.parameters.profiles,
       VideoCodecParametersTypes.LEVEL, videoOptions.parameters.levels,
+      ...iframeEncodable,
     );
 
     const videoStreamConfiguration = tlv.encode(
