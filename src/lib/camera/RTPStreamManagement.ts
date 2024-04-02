@@ -318,6 +318,7 @@ export type VideoStreamingOptions = {
 export interface H264CodecParameters {
   levels: H264Level[],
   profiles: H264Profile[],
+  iframeInterval?: number,
 }
 
 /**
